@@ -31,7 +31,7 @@
 	<!-- / Required Modules -->
 	
 	<!-- Module Activator -->
-	<activator>${project.parent.groupId}.${project.parent.artifactId}.patientdashboarduiActivator</activator>
+	<activator>${project.parent.groupId}.${project.parent.artifactId}.PatientDashboardUiActivator</activator>
 	
 	
 	<!-- Maps hibernate file's, if present -->
