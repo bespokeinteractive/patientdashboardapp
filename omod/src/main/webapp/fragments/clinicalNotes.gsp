@@ -235,7 +235,7 @@ jq(function() {
         jq.ajax({
           type: 'POST',
           url: '${ ui.actionLink("patientdashboardapp", "clinicalNoteProcessor", "processNote", [ successUrl: successUrl ]) }',
-          data :{ note: ko.toJSON(note, ["label", "id", "admitted", "diagnosisProvisional","diagnoses", "illnessHistory", "inpatientWarads", "investigations", "opdId", "opdLogId", "otherInstructions", "patientId", "procedures", "queueId", "signs", "referredTo", "outcome", "admitTo", "followUp","option"]) },
+          data :{ note: ko.toJSON(note, ["label", "id", "admitted", "diagnosisProvisional","diagnoses", "illnessHistory", "inpatientWarads", "investigations", "opdId", "opdLogId", "otherInstructions", "patientId", "procedures", "queueId", "signs", "referredTo", "outcome", "admitTo", "followUp","option","drugs","drugName","formulation","frequency","numberOfDays","comment"]) },
           success: function (data, status, xhr) {
               var redirectUrl = xhr.getResponseHeader('Location');
               console.log(xhr.getAllResponseHeaders());
@@ -825,23 +825,23 @@ jq(function(){
         <ul>
             <li>
                 <span>Drug</span>
-                <input class="drug-name" type="text" data-bind="value: name, valueUpdate: 'blur'" >
+                <input class="drug-name" type="text" data-bind="value: prescription.drug().name, valueUpdate: 'blur'" >
             </li>
             <li>
                 <span>Formulation</span>
-                <select data-bind="options: formulationOpts, value: formulation, optionsText: 'label',  optionsCaption: 'Select Formulation'"></select>
+                <select data-bind="options:  prescription.drug().formulationOpts, value: prescription.drug().formulation, optionsText: 'label',  optionsCaption: 'Select Formulation'"></select>
             </li>
             <li>
                 <span>Frequency</span>
-                <select data-bind="options: frequencyOpts, value: frequency, optionsText: 'label',  optionsCaption: 'Select Frequency'"></select>
+                <select data-bind="options:  prescription.drug().frequencyOpts, value:  prescription.drug().frequency, optionsText: 'label',  optionsCaption: 'Select Frequency'"></select>
             </li>
             <li>
                 <span>Number of Days</span>
-                <input type="text" data-bind="value: numberOfDays" >
+                <input type="text" data-bind="value:  prescription.drug().numberOfDays" >
             </li>
             <li>
                 <span>Comment</span>
-                <textarea data-bind="value: comment"></textarea>
+                <textarea data-bind="value:  prescription.drug().comment"></textarea>
             </li>
         </ul>
        
@@ -850,6 +850,135 @@ jq(function(){
     </div>
 </div>
 
-<script>
+var prescription = {drug: ko.observable(new Drug())};
+ko.applyBindings(prescription, jq("#prescription-dialog")[0]);
 
+jq(function(){
+	jq("#notes-form").on('focus', '#follow-up-date', function () {
+		jq(this).datetimepicker({
+		  minView: 2,
+		  autoclose: true,
+		  pickerPosition: "bottom-left",
+		  todayHighlight: false,
+		  startDate: "+0d",
+		  format: "dd/mm/yyyy"});
+	});
+
+	var prescriptionDialog = emr.setupConfirmationDialog({
+	    selector: '#prescription-dialog',
+	    actions: {
+		    confirm: function() {
+			    note.addPrescription(prescription.drug());
+                console.log("This is the prescription object:");
+                console.log(prescription);
+                prescription.drug(new Drug());
+                prescriptionDialog.close();
+
+			},
+			cancel: function() {
+                prescription.drug(new Drug());
+			    prescriptionDialog.close();
+			}
+	    }
+	});
+
+	jq("#add-prescription").on("click", function(e){
+		e.preventDefault();
+
+	    prescriptionDialog.show();
+	});
+
+	jq(".drug-name").on("focus.autocomplete", function () {
+	      var selectedInput = this;
+	      jq(this).autocomplete({
+	        source: function( request, response ) {
+	          jq.getJSON('${ ui.actionLink("patientdashboardapp", "ClinicalNotes", "getDrugs") }',
+	            {
+	              q: request.term
+	            }
+	          ).success(function(data) {
+	            var results = [];
+	            for (var i in data) {
+	              var result = { label: data[i].name, value: data[i].id};
+	              results.push(result);
+	            }
+	            response(results);
+	          });
+	        },
+	        minLength: 3,
+	        select: function( event, ui ) {
+	          event.preventDefault();
+	          jq(selectedInput).val(ui.item.label);
+	        },
+	        change: function (event, ui) {
+	          event.preventDefault();
+	          jq(selectedInput).val(ui.item.label);
+	          console.log(ui.item.label);
+	          jq.getJSON('${ ui.actionLink("patientdashboardapp", "ClinicalNotes", "getFormulationByDrugName") }',
+	            {
+	              "drugName": ui.item.label
+	            }
+	          ).success(function(data) {
+	            var formulations = jq.map(data, function (formulation) {
+                    console.log(formulation);
+	              return new Formulation({ id: formulation.id, label: formulation.name});
+	            });
+	            prescription.drug().formulationOpts(formulations);
+	          });
+
+              //fetch the frequenciesui.
+              jq.getJSON('${ui.actionLink("patientdashboardapp","ClinicalNotes","getFrequencies")}').success(function(data){
+                   console.log(data);
+                  var frequency = jq.map(data, function (frequency) {
+                      return new Frequency({id: frequency.id, label: frequency.name});
+                  });
+                  prescription.drug().frequencyOpts(frequency);
+                });
+
+	        },
+	        open: function() {
+	          jq( this ).removeClass( "ui-corner-all" ).addClass( "ui-corner-top" );
+	        },
+	        close: function() {
+	          jq( this ).removeClass( "ui-corner-top" ).addClass( "ui-corner-all" );
+	        }
+	      });
+	    });
+});
 </script>
+
+<style>
+.simple-form-ui section {
+   width: 74%;
+}
+.dialog input {
+    display: block;
+    margin: 5px 0;
+    color: #363463;
+    padding: 5px 0 5px 10px;
+    background-color: #FFF;
+    border: 1px solid #DDD;
+    width: 97%;
+}
+.symptom-container, .diagnosis-container, .procedure-container, .investigation-container {
+    border-top: darkgrey dashed 1px;
+    margin-top: 8px;
+}
+.qualifier-container {
+    margin-left: 20px;
+    background-color: white;
+    padding: 5px 0 5px 15px;
+    font-size: .95em;
+}
+.qualifier-container p.qualifier-field label, .outcomes-container p.outcome {
+    font-size: .95em;
+    line-height: 19px;
+}
+.qualifier-option {
+    margin-bottom: 10px;
+}
+.pointer :hover {
+    cursor: pointer;
+}
+</style>
+>>>>>>> Allows user to add more than one drug- bug fix
