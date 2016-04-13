@@ -22,8 +22,6 @@ var jq = jQuery,
     previousNote = JSON.parse('${note}'),
     note = new Note(previousNote);
 
-
-
 var getJSON = function (dataToParse) {
 	if (typeof dataToParse === "string") {
 		return JSON.parse(dataToParse);
@@ -36,6 +34,7 @@ note.availableOutcomes = jq.map(outcomeOptions, function(outcomeOption){
 });
 
 jQuery(document).ready(function () {
+    jq("#provisional-diagnosis").attr("data-display-value",null);
 	jq('input[type=radio][name=diagnosis_type]').change(function() {
         if (this.value == 'true') {
             jq('#title-diagnosis').text('PROVISIONAL DIAGNOSIS');
@@ -53,8 +52,6 @@ note.inpatientWards = ${listOfWards.collect { it.toJson() }};
 note.internalReferralOptions = ${internalReferralSources.collect { it.toJson() }};
 note.externalReferralOptions = ${externalReferralSources.collect { it.toJson() }};
 note.referralReasonsOptions = ${referralReasonsSources.collect { it.toJson() }}
-
-
 
 var mappedSigns = jq.map(getJSON(previousNote.signs), function(sign) {
     return new Sign(sign);
@@ -84,8 +81,8 @@ note.procedures(mappedProcedures);
 //note
 
 jq(function() {
-    NavigatorController = new KeyboardController();
     ko.applyBindings(note, jq("#notes-form")[0]);
+    NavigatorController = new KeyboardController();
     jq( "#symptom" ).autocomplete({
          source: function( request, response ) {
           jq.getJSON('${ ui.actionLink("patientdashboardapp", "ClinicalNotes", "getSymptoms") }',
@@ -106,6 +103,7 @@ jq(function() {
          select: function( event, ui ) {
            event.preventDefault();
            jq(this).val(ui.item.label);
+           jq("#symptoms-set").val("Symptom set");
            jq.getJSON('${ ui.actionLink("patientdashboardapp", "ClinicalNotes", "getQualifiers") }',
                {
                    signId: ui.item.value
@@ -149,6 +147,7 @@ jq(function() {
       select: function( event, ui ) {
         event.preventDefault();
         jq(this).val(ui.item.label);
+        jq("#diagnosis-set").val("Diagnosis set");
         note.addDiagnosis(new Diagnosis({id: ui.item.value, label: ui.item.label}));
         
 		jq('#diagnosis').val('');
@@ -183,6 +182,7 @@ jq(function() {
         select: function( event, ui ) {
             event.preventDefault();
             jq(this).val(ui.item.label);
+            jq("#procedure-set").val("Procedure set");
             var procedure = procedureMatches.find(function (procedureMatch) {
                return procedureMatch.value === ui.item.value;
             });
@@ -217,6 +217,7 @@ jq(function() {
         select: function( event, ui ) {
             event.preventDefault();
             jq(this).val(ui.item.label);
+            jq("#investigation-set").val("Investigation set");
             note.addInvestigation(new Investigation({id: ui.item.value, label: ui.item.label}));
             jq('#investigation').val('');
             jq('#task-investigation').show();
@@ -340,6 +341,7 @@ jq(function(){
 	        change: function (event, ui) {
 	          event.preventDefault();
 	          jq(selectedInput).val(ui.item.label);
+	          jq("#drug-set").val("Investigation set");
 	          console.log(ui.item.label);
 	          jq.getJSON('${ ui.actionLink("patientdashboardapp", "ClinicalNotes", "getFormulationByDrugName") }',
 	            {
@@ -519,6 +521,9 @@ jq(function(){
 	.symptom-label span{
 		padding-left: 10px;
 	}
+	.procedure-label span{
+	    padding-left: 10px;
+	}
     .diagnosis-container p,
     .investigation-container p,
     .procedure-container p {
@@ -586,7 +591,7 @@ jq(function(){
         <fieldset class="no-confirmation">
             <legend>Symptoms</legend>
                 <p class="input-position-class">
-                    <label for="symptom">Symptom</label>
+                    <label for="symptom">Symptoms</label>
                     <input type="text" id="symptom" name="symptom" placeholder="Add Symptoms" />
                 </p>
 
@@ -595,7 +600,7 @@ jq(function(){
                         <span id="title-symptom" class="tasks-title">PATIENT'S SYMPTOMS</span>
                         <a class="tasks-lists"></a>
                     </header>
-                    
+
                     <div class="symptoms-qualifiers" data-bind="foreach: signs" >
                         <div class="symptom-container">
                             <div class="symptom-label">
@@ -603,7 +608,7 @@ jq(function(){
                                 <span class="right pointer" data-bind="click: \$root.removeSign"><i class="icon-remove small"></i></span>
                                 <span data-bind="text: label"></span>
                             </div>
-                            
+
                             <div class="qualifier-container" style="display: none;">
                                 <ul class="qualifier" data-bind="foreach: qualifiers">
                                     <li>
@@ -618,15 +623,18 @@ jq(function(){
                                         </div>
                                         <div data-bind="if: options().length === 0" >
                                             <p>
-                                                <input type="text" data-bind="value: \$parent.freeText" >
+                                                <input type="text" data-bind="value: \$parent.freeText" />
                                             </p>
                                         </div>
                                     </li>
                                 </ul>
-                            </div> 
+                            </div>
                         </div>
                     </div>
                 </div>
+            <p>
+                <input type="hidden" id="symptoms-set" />
+            </p>
         </fieldset>
 
         <fieldset class="no-confirmation">
@@ -644,35 +652,34 @@ jq(function(){
                 <textarea data-bind="value: \$root.physicalExamination" id="examination" name="examination" rows="10" cols="74"></textarea>
             </p>
         </fieldset>
+
         <fieldset class="no-confirmation">
             <legend>Diagnosis</legend>
             <div>
-				<h2>Patient's Diagnosis</h2>
+				<label>Patient's Diagnosis</label>
 				<div class="tasks-list">
-					<p class="left">
+					<div class="left">
 						<label id="ts01" class="tasks-list-item" for="provisional-diagnosis">
-							
 							<input type="radio" name="diagnosis_type" id="provisional-diagnosis" value="true" data-bind="checked: diagnosisProvisional" class="tasks-list-cb focused"/>
-							
 							<span class="tasks-list-mark"></span>
 							<span class="tasks-list-desc">Provisional</span>
 						</label>
-					</p>
+					</div>
 					
-					<p class="left">
+					<div class="left">
 						<label class="tasks-list-item" for="final-diagnosis">
 							<input type="radio" name="diagnosis_type" id="final-diagnosis" value="false" data-bind="checked: diagnosisProvisional" class="tasks-list-cb"/>
 							<span class="tasks-list-mark"></span>
 							<span class="tasks-list-desc">Final</span>
 						</label>
-					</p>
+					</div>
 				</div>
 
                 <div>
                     <p class="input-position-class">
                         <input type="text" id="diagnosis" name="diagnosis" placeholder="Select Diagnosis" />
                     </p>
-					
+
 					<div id="task-diagnosis" class="tasks" style="display:none;">
 						<header class="tasks-header">
 							<span id="title-diagnosis" class="tasks-title">DIAGNOSIS</span>
@@ -686,68 +693,74 @@ jq(function(){
 							</div>
 						</div>
 					</div>
-					
                     
                 </div>
             </div>
+            <p>
+                <input type="hidden" id="diagnosis-set" />
+            </p>
         </fieldset>
 		
         <fieldset class="no-confirmation">
             <legend>Procedures</legend>
-            <div>
-				<h2>Patient Procedures</h2>
                 <p class="input-position-class">
-                    <input type="text" id="procedure" name="procedure" placeholder="Specify a Procedure" />
+                    <label for="procedure">Procedures</label>
+                    <input type="text" id="procedure" name="procedure" placeholder="Add procedure" />
                 </p>
-				
-				<div id="task-procedure" class="tasks" style="display:none;">
-					<header class="tasks-header">
-						<span id="title-procedure" class="tasks-title">PROCEDURES</span>
-						<a class="tasks-lists"></a>
-					</header>
-					
-					<div data-bind="foreach: procedures">
-						<div class="procedure-container">
-							<span class="right pointer" data-bind="click: \$root.removeProcedure"><i class="icon-remove small"></i></span>
-							<p data-bind="text: label"></p>
-							<span data-bind="if: schedulable">Schedule:<input type="date"></span>
-						</div>
-					</div>
-				</div>
-                
+
+            <div class="tasks" id="task-procedure" style="display:none;">
+                <header class="tasks-header">
+                    <span id="title-procedure" class="tasks-title">PROCEDURES</span>
+                    <a class="tasks-lists"></a>
+                </header>
+
+                <div id="procedure-carrier" data-bind="foreach: procedures" style="margin-top: -2px">
+                    <div class="procedure-container">
+                        <span class="right pointer" data-bind="click: \$root.removeProcedure"><i class="icon-remove small"></i></span>
+                        <p data-bind="text: label"></p>
+                    </div>
+                </div>
             </div>
+            <p>
+                <input type="hidden" id="procedure-set" />
+            </p>
         </fieldset>
 		
-        <fieldset class="no-confirmation">
+		<fieldset class="no-confirmation">
             <legend>Investigations</legend>
-            <div>
                 <p class="input-position-class">
-                    <label for="investigation">Investigation:</label>
-                    <input type="text" id="investigation" name="investigation" />
+                    <label for="investigation">Investigations</label>
+                    <input type="text" id="investigation" name="investigation" placeholder="Add investigation to be conducted" />
                 </p>
-				
-				<div id="task-investigation" class="tasks" style="display:none;">
-					<header class="tasks-header">
-						<span id="title-investigation" class="tasks-title">INVESTIGATION</span>
-						<a class="tasks-lists"></a>
-					</header>
-					
-					<div data-bind="foreach: investigations">
-						<div class="investigation-container">
-							<span class="right pointer" data-bind="click: \$root.removeInvestigation"><i class="icon-remove small"></i></span>
-							<p data-bind="text: label"></p>
-						</div>
-					</div>
-				</div>
+
+            <div class="tasks" id="task-investigation" style="display:none;">
+                <header class="tasks-header">
+                    <span id="title-investigation" class="tasks-title">INVESTIGATION</span>
+                    <a class="tasks-lists"></a>
+                </header>
+
+                <div id="investigation-carrier" data-bind="foreach: investigations" style="margin-top: -2px">
+                    <div class="investigation-container">
+                        <span class="right pointer" data-bind="click: \$root.removeInvestigation"><i class="icon-remove small"></i></span>
+                        <p data-bind="text: label"></p>
+                    </div>
+                </div>
             </div>
+            <p>
+                <input type="hidden" id="investigation-set" />
+             </p>
         </fieldset>
+
         <fieldset class="no-confirmation">
             <legend>Prescription</legend>
+                <p class="input-position-class">
+                    <label for="prescription">Prescription Medicine</label>
+                </p>
             <div>
                 <div style="display:none">
                     <p><input type="text" ></p>
                 </div>
-                <h2>Prescribe Medicine</h2>
+
                 <table>
                     <thead>
                         <tr>
@@ -776,9 +789,11 @@ jq(function(){
                 <br/>
                 <button id="add-prescription">Add</button>
             </div>
+            <p>
+                <input type="hidden" id="drug-set" />
+            </p>
         </fieldset>
-		
-		
+
         <fieldset class="no-confirmation">
             <legend>Other Instructions</legend>
             <p class="input-position-class">
@@ -786,39 +801,40 @@ jq(function(){
 				<textarea data-bind="value: \$root.otherInstructions" id="instructions" name="instructions" rows="10" cols="74"></textarea>
             </p>
         </fieldset>
+
         <fieldset class="no-confirmation">
             <legend>Outcome</legend>
+            <p class="input-position-class">
+                <h2>Patient Referral</h2>
+            </p>
+
             <div>
-                <h2> Patient Referral</h2>
 				<div class="onerow">
 					<div class="col4"><label for="internalReferral">Internal Referral</label></div>
 					<div class="col4"><label for="externalReferral">External Referral</label></div>
 					<div class="col4 last"><label for="facility"> Facility</label></div>
 				</div>
-				
 				<div class="onerow">
 					<div class="col4">
-						<p class="input-position-class">
+						<div class="input-position-class">
 							<select id="internalReferral" name="internalReferral" data-bind="options: \$root.internalReferralOptions, optionsText: 'label', value: \$root.referredTo, optionsCaption: 'Please select...'">
 							</select>
-						</p>
+						</div>
 					</div>
-					
 					<div class="col4">
-
-						<p class="input-position-class">
+						<div class="input-position-class">
                             <select id="externalReferral" name="externalReferral" data-bind="options: \$root.externalReferralOptions, optionsText: 'label', value: \$root.referredTo, optionsCaption: 'Please select...'">
                             </select>
-						</p>
+						</div>
 					</div>
-
                     <div class="col4 last">
-                        <p class="input-position-class">
+
+                        <div class="input-position-class">
                             <input type="text" id="facility" name="facility" data-bind="value: \$root.facility">
                             </input>
-                        </p>
+                        </div>
 
-                    </div> <br/> <br/> <br/>
+                    </div> <br/>
 
                     <div class="onerow" style="padding-top:-5px;">
                         <label for="referralReasons" style="margin-top:20px;">Referral Reasons</label>
@@ -832,14 +848,20 @@ jq(function(){
                         <textarea type="text" id="referralComments" name="referralComments" data-bind="value: \$root.referralComments" placeholder="COMMENTS"  style="height: 80px; width: 650px;"></textarea>
 
                     </div>
+                </div>
 
+                <div class="onerow" style="padding-top:-5px;">
+                    <label for="externalReferralComments" style="margin-top:20px;">Comments</label>
+                    <textarea type="text" id="externalReferralComments" name="externalReferralComments" data-bind="value: \$root.externalReferralComments" placeholder="COMMENTS"  style="height: 80px; width: 650px;"></textarea>
+                </div>
+            </div>
 			
             <div>
                 <h2>What is the outcome of this visit?</h2>
-				
+
                 <div data-bind="foreach: availableOutcomes" class="outcomes-container">
                     <div data-bind="if: !(\$root.admitted !== false && \$data.id !== 2)">
-                        <p class="outcome">
+                        <div class="outcome">
                             <input type="radio" name="outcome" data-bind="click: updateOutcome" >
                             <label data-bind="text: option.label"></label>
                             <span data-bind="if: \$data.option.id === 1 && \$root.outcome() && \$root.outcome().option.id === 1">
@@ -851,10 +873,13 @@ jq(function(){
                             <span data-bind="if: \$data.option.id === 2 && \$root.outcome() && \$root.outcome().option.id === 2">
                                 <select data-bind="options: \$root.inpatientWards, optionsText: 'label', value: admitTo" ></select>
                             </span>
-                        </p>
+                        </div>
                     </div>
                 </div>
             </div>
+            <p>
+                <input type="hidden" id="outcome-set" />
+            </p>
         </fieldset>
     </section>
     <div id="confirmation" style="width:74.6%; min-height: 400px;">

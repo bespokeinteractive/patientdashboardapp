@@ -38,6 +38,9 @@ function Note(noteObj) {
 
 	this.removeSign = function(symptom) {
 		self.signs.remove(symptom);
+		if (self.signs().length == 0) {
+		    jq("#symptoms-set").val('');
+		}
 	};
 
 	this.addDiagnosis = function(diagnosis) {
@@ -53,6 +56,9 @@ function Note(noteObj) {
 
 	this.removeDiagnosis = function(diagnosis) {
 		self.diagnoses.remove(diagnosis);
+		if (self.diagnoses().length == 0) {
+            jq("#diagnosis-set").val('');
+        }
 	};
 
 	this.addProcedure = function(procedure) {
@@ -68,6 +74,9 @@ function Note(noteObj) {
 
 	this.removeProcedure = function(procedure) {
 		self.procedures.remove(procedure);
+		if (self.procedures().length == 0) {
+            jq("#procedure-set").val('');
+        }
 	};
 
 	this.addInvestigation = function(investigation) {
@@ -83,6 +92,9 @@ function Note(noteObj) {
 
 	this.removeInvestigation = function(investigation) {
 		self.investigations.remove(investigation);
+		if (self.investigations().length == 0) {
+        	jq("#investigation-set").val('');
+        }
 	};
 
 	self.getPrescription = function(drugName) {
@@ -98,6 +110,9 @@ function Note(noteObj) {
 
 	this.removePrescription = function(drug) {
 		self.drugs.remove(drug);
+		if (self.drugs().length == 0) {
+            jq("#drug-set").val('');
+        }
 	};
 
 	this.refer = function(referTo) {
@@ -176,8 +191,10 @@ function Outcome(outcomeObj) {
 
 	this.updateOutcome = function(data) {
 		note.outcome(this);
+		jq("#outcome-set").val("outcome set");
 		return true;
 	}
+
 }
 
 function Referral(referralObj) {
