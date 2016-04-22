@@ -23,15 +23,12 @@ note.availableOutcomes = jq.map(outcomeOptions, function(outcomeOption) {
 });
 
 jQuery(document).ready(function() {
-    jq("#provisional-diagnosis").attr("data-display-value",null);
-    jq("#final-diagnosis").attr("data-display-value",null);
     jq('input[type=radio][name=diagnosis_type]').change(function() {
         if (this.value == 'true') {
             jq('#title-diagnosis').text('PROVISIONAL DIAGNOSIS');
         } else {
             if (jq('#title-diagnosis').text() != "DIAGNOSIS") {
                 jq('#diagnosis-carrier').html('');
-                jq('#diagnosis-set').val('');
             }
 
             jq('#title-diagnosis').text('FINAL DIAGNOSIS');
@@ -87,11 +84,9 @@ jQuery(document).ready(function() {
         } else {
             if (jq('#title-diagnosis').text() != "DIAGNOSIS") {
                 jq('#diagnosis-carrier').html('');
-                jq("#diagnosis-set").val('');
             }
 
             jq('#title-diagnosis').text('FINAL DIAGNOSIS');
-
         }
     });
 
@@ -142,9 +137,8 @@ note.procedures(mappedProcedures);
 
 jq(function() {
 
-
-    ko.applyBindings(note, jq("#notes-form")[0]);
     NavigatorController = new KeyboardController();
+    ko.applyBindings(note, jq("#notes-form")[0]);
     jq("#symptom").autocomplete({
         source: function(request, response) {
             jq.getJSON('${ ui.actionLink("patientdashboardapp", "ClinicalNotes", "getSymptoms") }', {
@@ -166,7 +160,6 @@ jq(function() {
         select: function(event, ui) {
             event.preventDefault();
             jq(this).val(ui.item.label);
-            jq("#symptoms-set").val("Symptom set");
             jq.getJSON('${ ui.actionLink("patientdashboardapp", "ClinicalNotes", "getQualifiers") }', {
                 signId: ui.item.value
             }).success(function(data) {
@@ -213,12 +206,11 @@ jq(function() {
         select: function(event, ui) {
             event.preventDefault();
             jq(this).val(ui.item.label);
-
             note.addDiagnosis(new Diagnosis({
                 id: ui.item.value,
                 label: ui.item.label
             }));
-            jq("#diagnosis-set").val("Diagnosis set");
+
             jq('#diagnosis').val('');
             jq('#diagnosis').focus();
             jq('#task-diagnosis').show();
@@ -253,7 +245,6 @@ jq(function() {
         select: function(event, ui) {
             event.preventDefault();
             jq(this).val(ui.item.label);
-            jq("#procedure-set").val("Procedure set");
             var procedure = procedureMatches.find(function(procedureMatch) {
                 return procedureMatch.value === ui.item.value;
             });
@@ -293,7 +284,6 @@ jq(function() {
         select: function(event, ui) {
             event.preventDefault();
             jq(this).val(ui.item.label);
-            jq("#investigation-set").val("Investigation set");
             note.addInvestigation(new Investigation({
                 id: ui.item.value,
                 label: ui.item.label
@@ -434,7 +424,6 @@ jq(function() {
             change: function(event, ui) {
                 event.preventDefault();
                 jq(selectedInput).val(ui.item.label);
-                jq("#drug-set").val("drug set");
                 console.log(ui.item.label);
                 jq.getJSON('${ ui.actionLink("patientdashboardapp", "ClinicalNotes", "getFormulationByDrugName") }', {
                     "drugName": ui.item.label
