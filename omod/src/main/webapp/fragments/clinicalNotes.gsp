@@ -65,9 +65,6 @@ ${ ui.includeFragment("patientdashboardapp", "patientDashboardAppScripts", [note
 					</div>
 				</div>
 			</div>
-			<p>
-               <input type="hidden" id="symptoms-set" />
-            </p>
         </fieldset>
 
         <fieldset class="no-confirmation">
@@ -90,7 +87,7 @@ ${ ui.includeFragment("patientdashboardapp", "patientDashboardAppScripts", [note
             <div>
 				<h2>Patient's Diagnosis</h2>
 				<div class="tasks-list">
-					<div class="left">
+					<p class="left">
 						<label id="ts01" class="tasks-list-item" for="provisional-diagnosis">
 							
 							<input type="radio" name="diagnosis_type" id="provisional-diagnosis" value="true" data-bind="checked: diagnosisProvisional" class="tasks-list-cb focused"/>
@@ -98,15 +95,15 @@ ${ ui.includeFragment("patientdashboardapp", "patientDashboardAppScripts", [note
 							<span class="tasks-list-mark"></span>
 							<span class="tasks-list-desc">Provisional</span>
 						</label>
-					</div>
+					</p>
 					
-					<div class="left">
+					<p class="left">
 						<label class="tasks-list-item" for="final-diagnosis">
 							<input type="radio" name="diagnosis_type" id="final-diagnosis" value="false" data-bind="checked: diagnosisProvisional" class="tasks-list-cb"/>
 							<span class="tasks-list-mark"></span>
 							<span class="tasks-list-desc">Final</span>
 						</label>
-					</div>
+					</p>
 				</div>
 				<div>
 					<p class="input-position-class">
@@ -122,16 +119,13 @@ ${ ui.includeFragment("patientdashboardapp", "patientDashboardAppScripts", [note
 						<div id="diagnosis-carrier" data-bind="foreach: diagnoses" style="margin-top: -2px">
 							<div class="diagnosis-container">
 								<span class="right pointer" data-bind="click: \$root.removeDiagnosis"><i class="icon-remove small"></i></span>
-								<div data-bind="text: label"></div>
+								<p data-bind="text: label"></p>
 							</div>
 						</div>
 					</div>
 				</div>
-            </div>
-            <p>
-                <input type="hidden" id="diagnosis-set" />
-            </p>
-        </fieldset>
+                </div>
+            </fieldset>
         <fieldset class="no-confirmation">
             <legend>Procedures</legend>
 			<p class="input-position-class">
@@ -153,9 +147,6 @@ ${ ui.includeFragment("patientdashboardapp", "patientDashboardAppScripts", [note
 					</div>
 				</div>
 			</div>
-			<p>
-                <input type="hidden" id="procedure-set" />
-            </p>
         </fieldset>
 		
         <fieldset class="no-confirmation">
@@ -182,11 +173,8 @@ ${ ui.includeFragment("patientdashboardapp", "patientDashboardAppScripts", [note
                 <div style="display:none">
                     <p><input type="text" ></p>
                 </div>
-		    </div>
-		    <p>
-                <input type="hidden" id="investigation-set" />
-            </p>
-        </fieldset>
+		</div>
+            </fieldset>
             <fieldset class="no-confirmation">
                 <legend>Prescription</legend>
 
@@ -229,9 +217,6 @@ ${ ui.includeFragment("patientdashboardapp", "patientDashboardAppScripts", [note
                 <br/>
                 <button id="add-prescription">Add</button>
             </div>
-            <p>
-                <input type="hidden" id="drug-set" />
-            </p>
         </fieldset>
 		
 		
@@ -251,6 +236,7 @@ ${ ui.includeFragment("patientdashboardapp", "patientDashboardAppScripts", [note
 					<div class="col4"><label for="externalReferral">External Referral</label></div>
 					<div class="col4 last"><label for="facility"> Facility Name</label></div>
 				</div>
+				
 				<div class="onerow">
 					<div class="col4">
 						<p class="input-position-class">
@@ -260,13 +246,12 @@ ${ ui.includeFragment("patientdashboardapp", "patientDashboardAppScripts", [note
 					</div>
 					
 					<div class="col4">
-						<field>
-						    <p class="input-position-class">
-                                <select id="externalReferral" name="externalReferral" onchange="loadExternalReferralCases();" data-bind="options: \$root.externalReferralOptions, optionsText: 'label', value: \$root.referredTo, optionsCaption: 'Please select...'">
-                                </select>
-						    </p>
-                        </field>
-                    </div>
+
+						<field><p class="input-position-class">
+                            <select id="externalReferral" name="externalReferral" onchange="loadExternalReferralCases();" data-bind="options: \$root.externalReferralOptions, optionsText: 'label', value: \$root.referredTo, optionsCaption: 'Please select...'">
+                            </select>
+						</p></field> </div>
+					</div>
 
                     <div class="col4 last">
                         <p class="input-position-class">
@@ -274,51 +259,50 @@ ${ ui.includeFragment("patientdashboardapp", "patientDashboardAppScripts", [note
                             </input>
                         </p>
                     </div> <br/>
-                </div>
 
-                <div class="onerow" style="padding-top:-5px;">
-                    <label for="referralReasons" style="margin-top:20px;">Referral Reasons</label>
-                    <select id="referralReasons" name="referralReasons" data-bind="options: \$root.referralReasonsOptions, optionsText: 'label', value: \$root.referralReasons, optionsCaption: 'Please select...'">
-                    </select>
-                </div>
+                    <div class="onerow" style="padding-top:-5px;">
+                        <label for="referralReasons" style="margin-top:20px;">Referral Reasons</label>
+                        <select id="referralReasons" name="referralReasons" data-bind="options: \$root.referralReasonsOptions, optionsText: 'label', value: \$root.referralReasons, optionsCaption: 'Please select...'">
+                        </select>
+
+                    </div>
 
                 <div class="onerow" style="padding-top:-5px;">
                     <label for="specify" style="margin-top:20px;">If Other Reasons, Please Specify</label>
                         <input type="text" id="specify" placeholder="Please Specify" name="specify" data-bind="value: \$root.specify">
                     </input>
+
                 </div>
 
-                <div class="onerow" style="padding-top:-5px;">
-                    <label for="referralComments" style="margin-top:20px;">Comments</label>
-                    <textarea type="text" id="referralComments"   name="referralComments" data-bind="value: \$root.referralComments" placeholder="COMMENTS"  style="height: 80px; width: 650px;"></textarea>
-                </div>
+                    <div class="onerow" style="padding-top:-5px;">
+                        <label for="referralComments" style="margin-top:20px;">Comments</label>
+                        <textarea type="text" id="referralComments"   name="referralComments" data-bind="value: \$root.referralComments" placeholder="COMMENTS"  style="height: 80px; width: 650px;"></textarea>
+                    </div>
 
-                <div>
-                    <h2>What is the outcome of this visit?</h2>
-                    <div data-bind="foreach: availableOutcomes" class="outcomes-container">
-                        <div data-bind="if: !(\$root.admitted !== false && \$data.id !== 2)">
-                            <p class="outcome">
-                                <input type="radio" name="outcome" data-bind="click: updateOutcome">
-                                <label data-bind="text: option.label"></label>
-                                <span data-bind="if: \$data.option.id === 1 && \$root.outcome() && \$root.outcome().option.id === 1">
-                                    <span id="follow-up-date" class="date">
-                                        <input data-bind="value : followUpDate">
-                                        <span class="add-on"><i class="icon-calendar small"></i></span>
-                                    </span>
-                                </span>
-                                <span data-bind="if: \$data.option.id === 2 && \$root.outcome() && \$root.outcome().option.id === 2">
-                                    <select data-bind="options: \$root.inpatientWards, optionsText: 'label', value: admitTo"></select>
-                                </span>
-                            </p>
+                        <div>
+                            <h2>What is the outcome of this visit?</h2>
+
+                            <div data-bind="foreach: availableOutcomes" class="outcomes-container">
+                                <div data-bind="if: !(\$root.admitted !== false && \$data.id !== 2)">
+                                    <p class="outcome">
+                                        <input type="radio" name="outcome" data-bind="click: updateOutcome">
+                                        <label data-bind="text: option.label"></label>
+                                        <span data-bind="if: \$data.option.id === 1 && \$root.outcome() && \$root.outcome().option.id === 1">
+                                            <span id="follow-up-date" class="date">
+                                                <input data-bind="value : followUpDate">
+                                                <span class="add-on"><i class="icon-calendar small"></i></span>
+                                            </span>
+                                        </span>
+                                        <span data-bind="if: \$data.option.id === 2 && \$root.outcome() && \$root.outcome().option.id === 2">
+                                            <select data-bind="options: \$root.inpatientWards, optionsText: 'label', value: admitTo"></select>
+                                        </span>
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
-            <p>
-                <input type="hidden" id="outcome-set" />
-           </p>
-        </fieldset>
-    </section>
+            </fieldset>
+        </section>
 
         <div id="confirmation" style="width:74.6%; min-height: 400px;">
             <span id="confirmation_label" class="title">Confirmation</span>
