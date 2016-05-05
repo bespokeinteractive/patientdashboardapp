@@ -6,6 +6,8 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.hospitalcore.PatientQueueService;
 import org.openmrs.module.hospitalcore.model.PatientMedicalHistory;
 
+import java.util.Date;
+
 /**
  * Created by USER on 2/16/2016.
  */
@@ -20,6 +22,9 @@ public class PatientMedicalHistorySaveHandler {
             if (patientMedicalHistory.getPatientId() == null) {
 
                 patientMedicalHistory.setPatientId(patientId);
+            }
+            if(patientMedicalHistory.getCreatedOn() == null){
+                patientMedicalHistory.setCreatedOn(updatedPatientMedicalHistory.getCreatedOn());
             }
             if(StringUtils.isNotBlank(updatedPatientMedicalHistory.getIllnessExisting())){
 
