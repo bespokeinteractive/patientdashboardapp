@@ -16,8 +16,11 @@
         jq('#surname').html(strReplace('${patient.names.familyName}')+',<em>surname</em>');
 		jq('#othname').html(strReplace('${patient.names.givenName}')+' &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <em>other names</em>');
 		jq('#agename').html('${patient.age} years ('+ moment('${patient.birthdate}').format('DD,MMM YYYY') +')');
-		
-		jq('.tad').text('Last Visit: '+ moment('${previousVisit}').format('DD.MM.YYYY hh:mm')+' HRS');
+		<% if (previousVisit) { %>
+			jq('.tad').text('Last Visit: ${ui.formatDatetimePretty(previousVisit)}');
+		<% } else { %>
+			jq('.tad').text('Last Visit: N/A');
+		<% } %>
     });
 </script>
 
@@ -273,10 +276,7 @@
 		</div>
 		
 		<div id="investigations">
-            ${ ui.includeFragment("patientdashboardapp", "investigations", [patientId: patientId]) }
-
-			echo "<a href=\"http://localhost/csfello/index.php?section_id=$id\" class=\"list-group-item active\">" . $category_name . "</a>"
-
+			${ ui.includeFragment("patientdashboardapp", "investigations", [patientId: patientId]) }
 		</div>
 	</div>
 </div>
