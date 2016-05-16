@@ -51,6 +51,23 @@
 			<groupId>org.openmrs.module</groupId>
 			<artifactId>hospitalcore-api</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>org.openmrs.module</groupId>
+			<artifactId>allergyapi-api</artifactId>
+		</dependency>
+
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>allergyui-omod</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>uicommons-omod</artifactId>
+        </dependency>
+
+
 						
 		<!-- End OpenMRS modules -->
 		

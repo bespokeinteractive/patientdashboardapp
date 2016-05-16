@@ -1,13 +1,13 @@
 <%
     ui.decorateWith("appui", "standardEmrPage", [title: "Triage Dashboard"])
-	
+
     ui.includeCss("uicommons", "datetimepicker.css")
-	ui.includeCss("patientdashboardapp", "onepcssgrid.css")
-	
+    ui.includeCss("patientdashboardapp", "onepcssgrid.css")
+
     ui.includeJavascript("patientdashboardapp", "note.js")
-	
-	ui.includeJavascript("billingui", "moment.js")
-	
+
+    ui.includeJavascript("billingui", "moment.js")
+
     ui.includeJavascript("uicommons", "datetimepicker/bootstrap-datetimepicker.min.js")
     ui.includeJavascript("uicommons", "handlebars/handlebars.min.js", Integer.MAX_VALUE - 1)
     ui.includeJavascript("uicommons", "navigator/validators.js", Integer.MAX_VALUE - 19)
@@ -446,7 +446,6 @@
 			nextQuestion.parentSection.toggleSelection();
 		}
 	}
-
 </script>
 
 <style>
@@ -626,11 +625,13 @@
 	}
 </style>
 
-<openmrs:require privilege="Triage Queue" otherwise="/login.htm" redirect="/module/patientqueueapp/queue.page?app=patientdashboardapp.triage"></openmrs:require>
+<openmrs:require privilege="Triage Queue" otherwise="/login.htm"
+                 redirect="/module/patientqueueapp/queue.page?app=patientdashboardapp.triage"></openmrs:require>
 <openmrs:globalProperty key="hospitalcore.hospitalName" defaultValue="ddu" var="hospitalName"/>
 
 
 <div class="clear"></div>
+
 <div id="content">
 	<div class="example">
 		<ul id="breadcrumbs">
@@ -689,7 +690,7 @@
 		<div class="close"></div>
 	</div>
 
-	<form method="post" id="notes-form" class="simple-form-ui" style="margin-top:10px;">
+	<form method="post" id="notes-form" class="simple-form-ui" style="margin-top:10px; display: block;">
 		<input type="hidden" value="${returnUrl?:""}" name="returnUrl" >
 		<section>
 			<span class="title">Vital Stats</span>
@@ -1537,53 +1538,105 @@
 </section>
 
 <div id="confirmation">
-	<span id="confirmation_label" class="title">Confirm</span>
+    <span id="confirmation_label" class="title">Confirm</span>
 
-        <div style="display:none;">
-        	<div class="before-dataCanvas"></div>
-                <div id="dataCanvas"></div>
-                	<div class="after-data-canvas"></div>
-				<div id="confirmationQuestion"></div>
-                    	</div>
-			<div class="dashboard">
-                    		<div class="info-section">
-		                	<div class="info-header">
-                        			<i class="icon-list-ul"></i>
-                        			<h3>Vitals Summary</h3>
-                                        </div>
-                        		<div class="info-body">
-                            			<ul>
-                                			<li id="li01"><span class="status active"></span><div>Weight:</div> <small id="summ_01">/</small></li>
-                                			<li id="li02"><span class="status active"></span><div>Height:</div> <small id="summ_02">/</small></li>
-                                			<% if (patient.age >= 2) { %>
-                                				<li id="li17"><span class="status active"></span><div>BMI:</div>                <small id="summ_17">/</small></li>
-                                			<% } %>
-                                			<li id="li03"><span class="status active"></span><div>MUA CC:</div> 			<small id="summ_03">/</small></li>
-                                			<li id="li04"><span class="status active"></span><div>Chest CC:</div> 			<small id="summ_04">/</small></li>
-                                			<li id="li05"><span class="status active"></span><div>Abdominal CC:</div>		<small id="summ_05">/</small></li>
-                                			<li id="li06"><span class="status active"></span><div>Temperature:</div>		<small id="summ_06">/</small></li>
-                                			<li id="li07"><span class="status active"></span><div>BP (Systolic):</div>		<small id="summ_07">/</small></li>
-                                			<li id="li08"><span class="status active"></span><div>BP (Diastolic):</div>		<small id="summ_08">/</small></li>
-                                			<li id="li09"><span class="status active"></span><div>Respiratory Rate:</div>	<small id="summ_09">/</small></li>
-                                			<li id="li10"><span class="status active"></span><div>Pulse Rate:</div>			<small id="summ_10">/</small></li>
-                                			<li id="li11"><span class="status active"></span><div>Last Periods:</div>		<small id="summ_11">/</small></li>
-                                			<li id="li16"><span class="status active"></span><div>Oxygen saturation:</div>  <small id="summ_16">/</small></li>
+    <div style="display:none;">
+        <div class="before-dataCanvas"></div>
 
-                                			<li id="li12"><span class="status active"></span><div>Blood Group:</div>		<small id="summ_12">/</small></li>
-                                			<li id="li13"><span class="status active"></span><div>Rhesus Factor:</div>		<small id="summ_13">/</small></li>
-                                			<li id="li14"><span class="status active"></span><div>HIV Status:</div>				<small id="summ_14">/</small></li>
-                                			<li id="li15"><span class="status active"></span><div>Room to Visit:</div>		<small id="summ_15">/</small></li>
-                            			</ul>
-                        		</div>
-                    		</div>
-                	</div>
+        <div id="dataCanvas"></div>
 
-                	<div class="onerow" style="margin-top: 150px">
-                    		<input id="submit" type="submit" class="submitButton confirm right" value="FINISH" style="float:right; display:inline-block; margin-left: 5px;" />
-                    		<a class="button cancel" onclick=" toggleSelection();">
-                        		<span style="padding: 15px;">REVIEW</span>
-                    		</a>
-                	</div>
-		</div>
-        </form>
+        <div class="after-data-canvas"></div>
+
+        <div id="confirmationQuestion"></div>
+    </div>
+
+    <div class="dashboard">
+        <div class="info-section">
+            <div class="info-header">
+                <i class="icon-list-ul"></i>
+
+                <h3>Vitals Summary</h3>
+            </div>
+
+            <div class="info-body">
+                <ul>
+                    <li id="li01"><span class="status active"></span>
+
+                        <div>Weight:</div> <small id="summ_01">/</small></li>
+                    <li id="li02"><span class="status active"></span>
+
+                        <div>Height:</div> <small id="summ_02">/</small></li>
+                    <% if (patient.age >= 2) { %>
+                    <li id="li17"><span class="status active"></span>
+
+                        <div>BMI:</div>                <small id="summ_17">/</small></li>
+                    <% } %>
+                    <li id="li03"><span class="status active"></span>
+
+                        <div>MUA CC:</div>            <small id="summ_03">/</small></li>
+                    <li id="li04"><span class="status active"></span>
+
+                        <div>Chest CC:</div>            <small id="summ_04">/</small></li>
+                    <li id="li05"><span class="status active"></span>
+
+                        <div>Abdominal CC:</div>        <small id="summ_05">/</small></li>
+                    <li id="li06"><span class="status active"></span>
+
+                        <div>Temperature:</div>        <small id="summ_06">/</small></li>
+                    <li id="li07"><span class="status active"></span>
+
+                        <div>BP (Systolic):</div>        <small id="summ_07">/</small></li>
+                    <li id="li08"><span class="status active"></span>
+
+                        <div>BP (Diastolic):</div>        <small id="summ_08">/</small></li>
+                    <li id="li09"><span class="status active"></span>
+
+                        <div>Respiratory Rate:</div>    <small id="summ_09">/</small></li>
+                    <li id="li10"><span class="status active"></span>
+
+                        <div>Pulse Rate:</div>            <small id="summ_10">/</small></li>
+                    <li id="li11"><span class="status active"></span>
+
+                        <div>Last Periods:</div>        <small id="summ_11">/</small></li>
+                    <li id="li16"><span class="status active"></span>
+
+                        <div>Oxygen saturation:</div>  <small id="summ_16">/</small></li>
+
+                    <li id="li12"><span class="status active"></span>
+
+                        <div>Blood Group:</div>        <small id="summ_12">/</small></li>
+                    <li id="li13"><span class="status active"></span>
+
+                        <div>Rhesus Factor:</div>        <small id="summ_13">/</small></li>
+                    <li id="li14"><span class="status active"></span>
+
+                        <div>HIV Status:</div>                <small id="summ_14">/</small></li>
+                    <li id="li15"><span class="status active"></span>
+
+                        <div>Room to Visit:</div>        <small id="summ_15">/</small></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="onerow" style="margin-top: 150px">
+        <input id="submit" type="submit" class="submitButton confirm right" value="FINISH"
+               style="float:right; display:inline-block; margin-left: 5px;"/>
+        <a class="button cancel" onclick=" toggleSelection();">
+            <span style="padding: 15px;">REVIEW</span>
+        </a>
+    </div>
 </div>
+
+
+<section>
+	<span class="title">Allergy</span>
+	<fieldset>
+		<legend>Manage Allergy</legend>
+		${ui.includeFragment ('patientdashboardapp','allergies')}
+	</fieldset>
+</section>
+
+</form>
+</div>
+
