@@ -118,6 +118,27 @@
 				<scope>provided</scope>
 			</dependency>
 
+			<dependency>
+				<groupId>org.openmrs.module</groupId>
+				<artifactId>allergyapi-api</artifactId>
+				<version>1.5-SNAPSHOT</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.openmrs.module</groupId>
+				<artifactId>allergyui-omod</artifactId>
+				<version>1.2</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.openmrs.module</groupId>
+				<artifactId>uicommons-omod</artifactId>
+				<version>1.7</version>
+				<scope>provided</scope>
+			</dependency>
+
 
 			<!-- End OpenMRS modules -->
 			

@@ -102,7 +102,7 @@
 				
 				<span class="menu-title" style="height: 30px">
 					<i class="icon-edit" style="float: left; margin-top: 1px; margin-right: 3px; color: rgb(0, 127, 255); font-weight: bold;"></i>
-					<a style="float: left;" href="${ ui.pageLink('patientdashboardapp', 'triage', [patientId: patientId, opdId: opdId, queueId: queueId, returnUrl: returnUrl]) }">Edit Triage Details</a>
+					<a style="float: left;" href="${ ui.pageLink('patientdashboardapp', 'triage', [patientId: patientId, opdId: opdId, queueId: queueId, clinicianReturnUrl: returnUrl]) }">Edit Triage Details</a>
 				</span>
 				
 				<span class="arrow-border"></span>

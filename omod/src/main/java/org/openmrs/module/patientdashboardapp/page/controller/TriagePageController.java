@@ -1,11 +1,6 @@
 package org.openmrs.module.patientdashboardapp.page.controller;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -19,6 +14,10 @@ import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.allergyapi.Allergies;
+import org.openmrs.module.allergyapi.AllergyConstants;
+import org.openmrs.module.allergyapi.api.PatientService;
+import org.openmrs.module.allergyui.extension.html.AllergyComparator;
 import org.openmrs.module.appui.UiSessionContext;
 import org.openmrs.module.hospitalcore.HospitalCoreService;
 import org.openmrs.module.hospitalcore.PatientQueueService;
@@ -39,9 +38,11 @@ import org.openmrs.module.patientdashboardapp.patienthistory.PatientPersonalHist
 import org.openmrs.module.referenceapplication.ReferenceApplicationWebConstants;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.annotation.BindParams;
+import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.page.PageModel;
 import org.openmrs.ui.framework.page.PageRequest;
 import org.openmrs.ui.framework.session.Session;
+import org.openmrs.ui.util.ByFormattedObjectComparator;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -54,7 +55,8 @@ public class TriagePageController {
 			@RequestParam("patientId") Patient patient,
 			@RequestParam("queueId") Integer queueId,
 			@RequestParam(value = "opdId", required = false) Integer opdId,
-			@RequestParam(value = "returnUrl", required = false) String returnUrl) {
+			@RequestParam(value = "clinicianReturnUrl", required = false) String clinicianReturnUrl,
+			@SpringBean("allergyService") PatientService patientService) {
 		pageRequest.getSession().setAttribute(ReferenceApplicationWebConstants.SESSION_ATTRIBUTE_REDIRECT_URL,ui.thisUrl());
 		sessionContext.requireAuthentication();
 		PatientQueueService patientQueueService = Context.getService(PatientQueueService.class);
@@ -73,6 +75,13 @@ public class TriagePageController {
 			lastVisitDate = lastEncounter.getEncounterDatetime();
 		}
 		model.addAttribute("lastVisitDate", lastVisitDate);
+
+		Allergies allergies = patientService.getAllergies(patient);
+		Comparator comparator = new AllergyComparator(new ByFormattedObjectComparator(ui));
+		Collections.sort(allergies, comparator);
+
+		model.addAttribute("allergies", allergies);
+
 		PatientMedicalHistory patientMedicalHistory = patientQueueService.getPatientHistoryByPatientId(patient.getPatientId());
 		model.addAttribute("patientMedicalHistory", patientMedicalHistory);
 		
@@ -85,13 +94,14 @@ public class TriagePageController {
 		PatientPersonalHistory patientPersonalHistory = patientQueueService.getPatientPersonalHistoryByPatientId(patient.getPatientId());
 		model.addAttribute("patientPersonalHistory", patientPersonalHistory);
 
+		model.addAttribute("hasModifyAllergiesPrivilege", Context.getAuthenticatedUser().hasPrivilege(AllergyConstants.PRIVILEGE_MODIFY_ALLERGIES));
 		model.addAttribute("patient", patient);
 		model.addAttribute("queueId", queueId);
 		model.addAttribute("opdId", opdId);
 		OpdPatientQueue opdPatientQueue = patientQueueService.getOpdPatientQueueById(queueId);
 		model.addAttribute("inOpdQueue", opdPatientQueue != null && opdPatientQueue.getPatient().equals(patient));
-		model.addAttribute("returnUrl", returnUrl);
-
+		model.addAttribute("returnUrl", ui.thisUrl());
+		model.addAttribute("clinicianReturnUrl", clinicianReturnUrl);
 		if (opdPatientQueue != null){
 			model.addAttribute("visitStatus", opdPatientQueue.getVisitStatus());
 		}
@@ -131,7 +141,7 @@ public class TriagePageController {
 	public String post(
 			@RequestParam("queueId") Integer queueId,
 			@RequestParam(value = "roomToVisit", required = false) Integer roomToVisit,
-			@RequestParam(value = "returnUrl", required = false) String returnUrl,
+			@RequestParam(value = "clinicianReturnUrl", required = false) String clinicianReturnUrl,
 			@BindParams ("triagePatientData") TriagePatientData triagePatientData,
 			@BindParams("patientMedicalHistory") PatientMedicalHistory patientMedicalHistory,
 			@BindParams("patientFamilyHistory") PatientFamilyHistory patientFamilyHistory,
@@ -192,12 +202,12 @@ public class TriagePageController {
 			Context.getService(PatientQueueService.class).saveOpdPatientQueue(opdPatientQueue);
 		}
 		
-		if (StringUtils.isBlank(returnUrl)) {
+		if (StringUtils.isBlank(clinicianReturnUrl)) {
 			Map<String,Object> params = new HashMap<String, Object>();
 			params.put("app", "patientdashboardapp.triage");
-			returnUrl = ui.pageLink("patientqueueapp", "triageQueue", params);
+			clinicianReturnUrl = ui.pageLink("patientqueueapp", "triageQueue", params);
 		}
-		return "redirect:" + returnUrl;
+		return "redirect:" + clinicianReturnUrl;
 	}
 
 	private TriagePatientQueueLog logTriagePatient(PatientQueueService queueService,
