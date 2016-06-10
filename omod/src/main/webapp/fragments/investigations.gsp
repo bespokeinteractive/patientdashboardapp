@@ -39,11 +39,21 @@ function format ( results ) {
     var display = '<div class="result-title">RESULTS</div><div class="result-page">';
     if (results.length == 0) {
         display = "NO RESULTS<br>";
-    } else {
+    } else if(results.length === 0){
+        display = "NO RESULTS<br>";
+    }else if(
+    	 jq.each(results, function(index,result){
+             if(result.label === "HAEMOGLOBIN"){
+          		display += '<i class="icon-angle-right small"> </i>' + result.label + ": " + (result.value || "--") + ": (g/dl) <br/>";
+             }
+          }));
+    else{
         jq.each(results, (function(index, result){
             display += '<i class="icon-angle-right small"> </i>' + result.label + ": " + (result.value || "--") + "<br/>";
         }));
     }
+   
+        
     return display;
 }
 
