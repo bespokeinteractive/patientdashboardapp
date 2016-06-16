@@ -4,9 +4,9 @@ ui.includeJavascript("patientqueueapp", "jquery.dataTables.min.js")
 %>
 
 <style>
-	.details-control i{
-		cursor: pointer;
-	}
+.details-control i{
+	cursor: pointer;
+}
 </style>
 
 <table id="investigations-table">
@@ -20,30 +20,33 @@ ui.includeJavascript("patientqueueapp", "jquery.dataTables.min.js")
     </thead>
     <tbody>
         <% labOrders.each { labOrder -> %>
-            <tr data-order-id="${labOrder.orderId}" data-patient-id="${labOrder.patientId}">
-                <td class="details-control"><i class="icon-plus small"></i></td>
-                <td>${labOrder.orderName}</td>
-                <td>${ui.formatDatetimePretty(labOrder.orderDate)}</td>
-                <td>${labOrder.orderer}</td>
-            </tr>
-        <%
-            } %>
+           <tr data-order-id="${labOrder.orderId}" data-patient-id="${labOrder.patientId}">
+               <td class="details-control"><i class="icon-plus small"></i></td>
+               <td>${labOrder.orderName}</td>
+               <td>${ui.formatDatetimePretty(labOrder.orderDate)}</td>
+               <td>${labOrder.orderer}</td>
+           </tr>
+       <%
+           } %>
 
     </tbody>
 </table>
 
 <script>
 var investigationsTable;
-
-function format ( results ) {
-    var display = '<div class="result-title">RESULTS</div><div class="result-page">';
-    if (results.length == 0) {
+	function format ( results ) {
+	var display = '<div class="result-title">RESULTS</div><div class="result-page">';
+    if(results.length === 0) {
         display = "NO RESULTS<br>";
-    } else {
+	} else {
         jq.each(results, (function(index, result){
-            display += '<i class="icon-angle-right small"> </i>' + result.label + ": " + (result.value || "--") + "<br/>";
-        }));
-    }
+        	if(result.label === "HAEMOGLOBIN"){
+         		display += '<i class="icon-angle-right small"> </i>' + result.label + ": " + (result.value || "--") + ": (g/dl) <br/>";
+            } else {
+            	display += '<i class="icon-angle-right small"> </i>' + result.label + ": " + (result.value || "--") + "<br/>";
+            }
+          }));
+    	}
     return display;
 }
 
