@@ -121,7 +121,7 @@ ${ ui.includeFragment("patientdashboardapp", "patientDashboardAppScripts", [note
 							<label class="tasks-list-item" for="final-diagnosis">
 								<input type="radio" name="diagnosis_type" id="final-diagnosis" value="false" data-bind="checked: diagnosisProvisional" class="tasks-list-cb"/>
 								<span class="tasks-list-mark"></span>
-								<span class="tasks-list-desc">Final</span>
+								<span class="tasks-list-desc">Final Diagnosis</span>
 							</label>
 						</div>
 					</div>
