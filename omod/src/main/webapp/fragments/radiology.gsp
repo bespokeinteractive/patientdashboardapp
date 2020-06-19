@@ -11,7 +11,7 @@ jq(function(){
 	            {
 	        patientId:${patientId}
 	        }).success(function(data){
-		        
+	        	results = [];
 	            jq.each(data.data,function(i,item){
                     var radiologyResult = {};
                     radiologyResult["Start Date"] = item["startDate"];
@@ -24,6 +24,7 @@ jq(function(){
 	    });
 
 	function radiologyTable(selector, data){
+        jq(selector).empty();
 	    var columns = addAllColumnHeaders(data, selector);
         for (var i = 0 ; i < data.length ; i++){
             var row  = jq('<tr/>');
