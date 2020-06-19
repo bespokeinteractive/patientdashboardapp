@@ -154,7 +154,7 @@ public class VisitDetail {
 				provisionalDiagnosisList.append("(Provisional)").append(obs.getValueCoded().getDisplayString()).append(", ");
 			}
 			if (obs.getConcept().equals(finalDiagnosisConcept)) {
-				finalDiagnosisList.append(obs.getValueCoded().getDisplayString()).append(", ");
+				finalDiagnosisList.append("(Final)").append(obs.getValueCoded().getDisplayString()).append(", ");
 			}
 			if (obs.getConcept().equals(investigationConcept)) {
 				investigationList.append(obs.getValueCoded().getDisplayString()).append(", ");
